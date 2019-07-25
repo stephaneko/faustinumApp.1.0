@@ -15,3 +15,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::resource('apotres', 'ApotreController');
+Route::resource('ajaxproducts','PaiementAjaxController');

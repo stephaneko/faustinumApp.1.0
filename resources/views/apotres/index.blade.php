@@ -36,14 +36,14 @@
             <td><a href="{{ route('apotres.edit',$apotre->id)}}" class="btn btn-primary">Modifier</a></td>
             <td>
                 <form action="{{ route('apotres.destroy', $apotre->id)}}" method="post">
-                  @csrf
-                  @method('DELETE')
-                  <button class="btn btn-danger" type="submit">Delete</button>
+                 @csrf
+                @method('DELETE')
+                  <button name="deleteBt" id="deleteBt" class="btn btn-danger" type="submit">Delete</button>
                 </form>
             </td>
         </tr>
         @endforeach
     </tbody>
   </table>
-<div>
+
 @endsection
