@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Apotre;
+use App\AjaxCrud;
 
 use Validator;
 
-class ApotreController extends Controller
+class AjaxCrudController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +18,7 @@ class ApotreController extends Controller
     public function index()
     {
         if (request()->ajax()) {
-            return datatables()->of(Apotre::latest()->get())
+            return datatables()->of(AjaxCrud::latest()->get())
                 ->addColumn('action', function ($data) {
                     $button = '<button type="button" name="edit" id="' . $data->id . '" class="edit btn btn-primary btn-sm">Editer</button>';
                     $button .= '&nbsp;&nbsp;';
@@ -26,9 +26,11 @@ class ApotreController extends Controller
                     return $button;
                 })
                 ->rawColumns(['action'])
+
                 ->make(true);
         }
-        return view('apotre_index');
+        return view('ajax_index');
+
     }
 
     /**
@@ -38,7 +40,7 @@ class ApotreController extends Controller
      */
     public function create()
     {
-     //
+        //
     }
 
     /**
@@ -50,11 +52,9 @@ class ApotreController extends Controller
     public function store(Request $request)
     {
         $rules = array(
-        'apotre_name'=>'required',
-        'apotre_surname'=>'required',
-        'apotre_paroisse'=>'required',
-        'apotre_zone'=>'required',
-        'apotre_status'=>'required'
+            'montant'    =>  'required',
+            'objet'     =>  'required',
+            'datePaie'     =>  'required',
         );
 
         $error = Validator::make($request->all(), $rules);
@@ -63,18 +63,21 @@ class ApotreController extends Controller
             return response()->json(['errors' => $error->errors()->all()]);
         }
 
+        // $recus = $request->file('recus');
+
+        // $new_name = rand() . '.' . $recus->getClientOriginalExtension();
+
+        // $recus->move(public_path('recus'), $new_name);
+
         $form_data = array(
-            'apotre_name'        =>  $request->apotre_name,
-            'apotre_surname'         =>  $request->apotre_surname,
-            'apotre_dateNais'           =>  $request->apotre_dateNais,
-            'apotre_paroisse'        =>  $request->apotre_paroisse,
-            'apotre_zone'         =>  $request->apotre_zone,
-            'apotre_status'           =>  $request->apotre_status,
+            'montant'        =>  $request->montant,
+            'objet'         =>  $request->objet,
+            'datePaie'           =>  $request->datePaie,
         );
 
         AjaxCrud::create($form_data);
 
-        return response()->json(['success' => 'Apôtre enregistrer avec succès.']);
+        return response()->json(['success' => 'Paiement enregistrer avec succès.']);
     }
 
     /**
@@ -97,7 +100,7 @@ class ApotreController extends Controller
     public function edit($id)
     {
         if (request()->ajax()) {
-            $data = Apotre::findOrFail($id);
+            $data = AjaxCrud::findOrFail($id);
             return response()->json(['data' => $data]);
         }
     }
@@ -111,25 +114,44 @@ class ApotreController extends Controller
      */
     public function update(Request $request)
     {
-      $request->validate([
-        'apotre_name'=>'required',
-        'apotre_surname'=>'required',
-        'apotre_paroisse'=>'required',
-        'apotre_zone'=>'required',
-        'apotre_status'=>'required'
-      ]);
+        // $image_name = $request->hidden_image;
+        // $image = $request->file('recus');
+        // if ($image != '') {
+        $request->validate(
+            [
+                'montant'    =>  'required',
+                'objet'     =>  'required',
+                'datePaie'     =>  'required',
+            ]
+         );
+            // $error = Validator::make($request->all(), $rules);
+            // if ($error->fails()) {
+            //     return response()->json(['errors' => $error->errors()->all()]);
+            // }
+
+        //     $image_name = rand() . '.' . $image->getClientOriginalExtension();
+        //     $image->move(public_path('recus'), $image_name);
+        // } else {
+        //     $rules = array(
+        //         'montant'    =>  'required',
+        //         'objet'     =>  'required'
+        //     );
+
+        //     $error = Validator::make($request->all(), $rules);
+
+        //     if ($error->fails()) {
+        //         return response()->json(['errors' => $error->errors()->all()]);
+        //     }
+        // }
 
         $form_data = array(
-            'apotre_name'       =>   $request->apotre_name,
-            'apotre_surname'        =>   $request->apotre_surname,
-            'apotre_dateNais'           =>  $request->apotre_dateNais,
-            'apotre_paroisse'       =>   $request->apotre_paroisse,
-            'apotre_zone'        =>   $request->apotre_zone,
-            'apotre_status'           =>  $request->apotre_status,
+            'montant'       =>   $request->montant,
+            'objet'        =>   $request->objet,
+            'datePaie'           =>  $request->datePaie,
         );
         AjaxCrud::whereId($request->hidden_id)->update($form_data);
 
-        return response()->json(['success' => ' modifier reussi']);
+        return response()->json(['success' => 'Paiement modifier']);
     }
 
     /**
