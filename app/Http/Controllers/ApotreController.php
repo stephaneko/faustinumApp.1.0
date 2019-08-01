@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Apotre;
+
+use Validator;
 
 class ApotreController extends Controller
 {
@@ -14,9 +17,18 @@ class ApotreController extends Controller
      */
     public function index()
     {
-       $apotres = apotre::all();
-
-        return view('apotres.index', compact('apotres'));
+        if (request()->ajax()) {
+            return datatables()->of(Apotre::latest()->get())
+                ->addColumn('action', function ($data) {
+                    $button = '<button type="button" name="edit" id="' . $data->id . '" class="edit btn btn-primary btn-sm">Editer</button>';
+                    $button .= '&nbsp;&nbsp;';
+                    $button .= '<button type="button" name="delete" id="' . $data->id . '" class="delete btn btn-danger btn-sm">Supprimer</button>';
+                    return $button;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+        return view('apotre_index');
     }
 
     /**
@@ -26,7 +38,7 @@ class ApotreController extends Controller
      */
     public function create()
     {
-       return view('apotres.create');
+     //
     }
 
     /**
@@ -37,23 +49,32 @@ class ApotreController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = array(
         'apotre_name'=>'required',
         'apotre_surname'=>'required',
         'apotre_paroisse'=>'required',
         'apotre_zone'=>'required',
         'apotre_status'=>'required'
-      ]);
-      $apotre = new Apotre([
-        'apotre_name' => $request->get('apotre_name'),
-        'apotre_surname' => $request->get('apotre_surname'),
-        'apotre_dateNais' => $request->get('apotre_dateNais'),
-        'apotre_paroisse' => $request->get('apotre_paroisse'),
-        'apotre_zone' => $request->get('apotre_zone'),
-        'apotre_status' => $request->get('apotre_status')
-      ]);
-     $apotre->save();
-      return redirect('/apotres')->with('success', 'Apotres enregistrer');
+        );
+
+        $error = Validator::make($request->all(), $rules);
+
+        if ($error->fails()) {
+            return response()->json(['errors' => $error->errors()->all()]);
+        }
+
+        $form_data = array(
+            'apotre_name'        =>  $request->apotre_name,
+            'apotre_surname'         =>  $request->apotre_surname,
+            'apotre_dateNais'           =>  $request->apotre_dateNais,
+            'apotre_paroisse'        =>  $request->apotre_paroisse,
+            'apotre_zone'         =>  $request->apotre_zone,
+            'apotre_status'           =>  $request->apotre_status,
+        );
+
+        AjaxCrud::create($form_data);
+
+        return response()->json(['success' => 'Apôtre enregistrer avec succès.']);
     }
 
     /**
@@ -75,9 +96,10 @@ class ApotreController extends Controller
      */
     public function edit($id)
     {
-       $apotre = apotre::find($id);
-
-        return view('apotres.edit', compact('apotre'));
+        if (request()->ajax()) {
+            $data = Apotre::findOrFail($id);
+            return response()->json(['data' => $data]);
+        }
     }
 
     /**
@@ -87,7 +109,7 @@ class ApotreController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
       $request->validate([
         'apotre_name'=>'required',
@@ -97,16 +119,17 @@ class ApotreController extends Controller
         'apotre_status'=>'required'
       ]);
 
-       $apotre = apotre::find($id);
-       $apotre->apotre_name = $request->get('apotre_name');
-       $apotre->apotre_surname = $request->get('apotre_surname');
-       $apotre->apotre_dateNais = $request->get('apotre_dateNais');
-       $apotre->apotre_paroisse = $request->get('apotre_paroisse');
-       $apotre->apotre_zone = $request->get('apotre_zone');
-       $apotre->apotre_status = $request->get('apotre_status');
-      $apotre->save();
+        $form_data = array(
+            'apotre_name'       =>   $request->apotre_name,
+            'apotre_surname'        =>   $request->apotre_surname,
+            'apotre_dateNais'           =>  $request->apotre_dateNais,
+            'apotre_paroisse'       =>   $request->apotre_paroisse,
+            'apotre_zone'        =>   $request->apotre_zone,
+            'apotre_status'           =>  $request->apotre_status,
+        );
+        AjaxCrud::whereId($request->hidden_id)->update($form_data);
 
-      return redirect('/apotres')->with('success', 'Mise à jour effectuer');
+        return response()->json(['success' => ' modifier reussi']);
     }
 
     /**
@@ -117,9 +140,7 @@ class ApotreController extends Controller
      */
     public function destroy($id)
     {
-     $apotre = apotre::find($id);
-     $apotre->delete();
-
-     return redirect('/apotres')->with('success', 'suppression reussi');
+        $data = AjaxCrud::findOrFail($id);
+        $data->delete();
     }
 }

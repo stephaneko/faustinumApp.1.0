@@ -26,9 +26,11 @@ class AjaxCrudController extends Controller
                     return $button;
                 })
                 ->rawColumns(['action'])
+
                 ->make(true);
         }
         return view('ajax_index');
+
     }
 
     /**

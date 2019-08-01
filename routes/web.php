@@ -13,11 +13,18 @@
 
 Route::get('/', function () {
     return view('welcome');
-});
-Route::resource('apotres', 'ApotreController');
+}
+);
+
 
 Route::resource('ajax-crud', 'AjaxCrudController');
 
 Route::post('ajax-crud/update', 'AjaxCrudController@update')->name('ajax-crud.update');
 
 Route::get('ajax-crud/destroy/{id}', 'AjaxCrudController@destroy');
+
+Route::resource('apotre', 'ApotreController');
+
+Route::post('apotre/update', 'ApotreController@update')->name('apotre.update');
+
+Route::get('apotre/destroy/{id}', 'ApotreController@destroy');

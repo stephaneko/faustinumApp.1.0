@@ -1,7 +1,7 @@
 <html  lang="en">
  <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Paiement</title>
+  <title>Apôtre</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
   <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
@@ -12,21 +12,23 @@
  <body>
   <div class="container">
      <br /gitgit>
-     <h3 align="center">Menu Paiement</h3>
+     <h3 align="center">Menu Apôtre</h3>
      <br />
      <div align="right">
       <button type="button" name="create_record" id="create_record" class="btn btn-success btn-sm">Ajouter</button>
      </div>
      <br />
    <div class="table-responsive">
-    <table class="table table-bordered table-striped" id="paiementTable">
+    <table class="table table-bordered table-striped" id="user_table">
            <thead>
-            <tr>
-                <th width="10%">date paiement</th>
-                <th width="35%">Montant</th>
-                <th width="35%">Objet</th>
-                <th width="30%">Action</th>
-            </tr>
+          <tr>
+         <td>ID</td>
+          <td>Nom et Prénom</td>
+          <td>Date de naissance</td>
+          <td>Paroisse</td>
+          <td>Zone</td>
+          <td>Status</td>
+         </tr>
            </thead>
        </table>
    </div>
@@ -48,28 +50,49 @@
          <form method="post" id="sample_form" class="form-horizontal" enctype="multipart/form-data">
           @csrf
           <div class="form-group">
-            <label class="control-label col-md-4" >Montant : </label>
+            <label class="control-label col-md-4" >Noms : </label>
             <div class="col-md-8">
-             <input type="text" name="montant" id="montant" class="form-control" />
+              <input type="text" class="form-control" name="apotre_name"/>
+            </div>
+           </div>
+
+            <div class="form-group">
+            <label class="control-label col-md-4" >Prenoms : </label>
+            <div class="col-md-8">
+              <input type="text" class="form-control" name="apotre_surname"/>
+            </div>
+           </div>
+
+             <div class="form-group">
+            <label class="control-label col-md-4" >Date de naissance: </label>
+            <div class="col-md-8">
+              <input type="date" class="form-control" name="apotre_dateNais"/>
+            </div>
+           </div>
+
+             <div class="form-group">
+            <label class="control-label col-md-4" >Paroisse : </label>
+            <div class="col-md-8">
+               <SELECT class="form-control" name="apotre_paroisse" data-style="btn-info">
+                <OPTION>saint clément
+                <OPTION>saint Thaddée
+                <OPTION selected>saint charles Lwanga
+                <OPTION>Saint sacrement
+                <OPTION>saint Thomas Apotres
+                </SELECT>
             </div>
            </div>
 
            <div class="form-group">
-                        <label for="motif" class="control-label col-md-4">Motif</label>
+                        <label for="motif" class="control-label col-md-4">Zone</label>
                         <div class="col-md-8">
-                            <select id="objet" name="objet" class="form-control" data-style="btn-info">
-                            <option>Contribution annuelle</option>
-                            <option>Contribution des menbres</option>
-                            <option>Oeuvre de miséricorde en faveur des defunts</option>
-                            <option>Oeuvre de miséricorde en faveur des Prêtres</option>
-                            <option>Autre Oeuvre de miséricorde </option>
-                            <option>Déces</option>
-                            <option>Fête de la Miséricorde</option>
-                            <option>Fête de sainte faustine</option>
-                            <option>Pélérinage</option>
-                            <option>Retraite spirituelle</option>
-                            <option>Mains levés</option>
-                            </select>
+                             <SELECT class="form-control" name="apotre_zone" data-style="btn-info">
+                            <OPTION>Wourri 1
+                            <OPTION>Wourri 2
+                            <OPTION selected>Wourri 3
+                            <OPTION>Wourri 4
+                            <OPTION>Wourri 5
+                            </SELECT>
                         </div>
                     </div>
 
@@ -80,10 +103,13 @@
             </div>
            </div> --}}
            <div class="form-group">
-            <label class="control-label col-md-4">Date d'encaissement : </label>
+            <label class="control-label col-md-4">status : </label>
             <div class="col-md-8">
-             <input type="date" name="datePaie" id="datePaie" class="form-control"   />
-             <span id="datePaie"></span>
+            <SELECT class="form-control" name="apotre_status" data-style="btn-info">
+                <OPTION>Volontaire
+                <OPTION>Acun
+                <OPTION selected>consacré
+                </SELECT>
             </div>
            </div>
            <br />
@@ -119,47 +145,48 @@
 
 <script>
 $(document).ready(function(){
- $('#paiementTable').DataTable({
+ $('#user_table').DataTable({
   processing: true,
   serverSide: true,
   ajax:{
-   url: "{{ route('ajax-crud.index') }}",
+   url: "{{ route('apotre.index') }}",
   },
   columns:[
    {
-    data: 'datePaie',
-    name: 'datePaie',
+    data: 'apotre_name',
+    name: 'apotre_name',
     orderable: true
    },
    {
-    data: 'montant',
-    name: 'montant'
+    data: 'apotre_surname',
+    name: 'apotre_surname'
    },
    {
-    data: 'objet',
-    name: 'objet'
+    data: 'apotre_dateNais',
+    name: 'apotre_dateNais'
+   },
+    {
+    data: 'apotre_paroisse',
+    name: 'apotre_paroisse'
+   },
+    {
+    data: 'apotre_zone',
+    name: 'apotre_zone'
+   },
+    {
+    data: 'apotre_status',
+    name: 'apotre_status'
    },
    {
     data: 'action',
     name: 'action',
     orderable: false
    }
-  ],
-"oTableTools": {
-"aButtons": [
-"copy",
-"print",
-{
-"sExtends": "collection",
-"sButtonText": "Save",
-"aButtons": [ "csv", "xls", "pdf" ]
-}
-]
-}
-});
+  ]
+ });
 
  $('#create_record').click(function(){
-  $('.modal-title').text("Ajouter un paiement");
+  $('.modal-title').text("Ajouter un Apôtre");
      $('#action_button').val("Valider");
      $('#action').val("Valider");
      $('#formModal').modal('show');
@@ -170,7 +197,7 @@ $(document).ready(function(){
   if($('#action').val() == 'Valider')
   {
    $.ajax({
-    url:"{{ route('ajax-crud.store') }}",
+    url:"{{ route('apotre.store') }}",
     method:"POST",
     data: new FormData(this),
     contentType: false,
@@ -203,7 +230,7 @@ $(document).ready(function(){
   if($('#action').val() == "Edit")
   {
    $.ajax({
-    url:"{{ route('ajax-crud.update') }}",
+    url:"{{ route('apotre.update') }}",
     method:"POST",
     data:new FormData(this),
     contentType: false,
@@ -239,16 +266,20 @@ $(document).ready(function(){
   var id = $(this).attr('id');
   $('#form_result').html('');
   $.ajax({
-   url:"/ajax-crud/"+id+"/edit",
+   url:"/apotre/"+id+"/edit",
    dataType:"json",
    success:function(html){
-    $('#montant').val(html.data.montant);
-    $('#objet').val(html.data.objet);
-     $('#datePaie').val(html.data.objet);
+    $('#apotre_name').val(html.data.apotre_name);
+     $('#apotre_surname').val(html.data.apotre_surname);
+     $('#apotre_dateNais').val(html.data.apotre_dateNais);
+    $('#apotre_paroisse').val(html.data.apotre_paroisse);
+    $('#apotre_zone').val(html.data.apotre_zone);
+    $('#apotre_status').val(html.data.apotre_status);
+
     // $('#store_recus').html("<img src={{ URL::to('/') }}/recuss/" + html.data.recus + " width='70' class='img-thumbnail' />");
     // $('#store_recus').append("<input type='hidden' name='hidden_recus' value='"+html.data.recus+"' />");
     $('#hidden_id').val(html.data.id);
-    $('.modal-title').text("Modiffier un paiement");
+    $('.modal-title').text("Modifier un apotre");
     $('#action_button').val("Edit");
     $('#action').val("Edit");
     $('#formModal').modal('show');
@@ -265,7 +296,7 @@ $(document).ready(function(){
 
  $('#ok_button').click(function(){
   $.ajax({
-   url:"ajax-crud/destroy/"+user_id,
+   url:"apotre/destroy/"+user_id,
    beforeSend:function(){
     $('#ok_button').text('Suppression...');
    },
